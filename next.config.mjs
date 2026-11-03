@@ -11,7 +11,7 @@ const nextConfig = {
     // Resize and compress every image for the visitor's screen (much lighter on phones).
     formats: ['image/webp'],
     deviceSizes: [640, 828, 1080, 1280, 1920],
-    imageSizes: [96, 256, 384],
+    imageSizes: [64, 128, 224, 448],
     qualities: [75],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },

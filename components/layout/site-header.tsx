@@ -48,10 +48,7 @@ export function SiteHeader() {
       )}
     >
       <div className="flex h-18 items-stretch md:h-20">
-        <div
-          className="flex items-center bg-brand pr-10 pl-[max(1rem,calc((100vw-80rem)/2+1rem))] md:pr-14"
-          style={{ clipPath: 'polygon(0 0, 100% 0, calc(100% - 28px) 100%, 0 100%)' }}
-        >
+        <div className="flex items-center pr-6 pl-[max(1rem,calc((100vw-80rem)/2+1rem))] md:pr-10">
           <Logo />
         </div>
 

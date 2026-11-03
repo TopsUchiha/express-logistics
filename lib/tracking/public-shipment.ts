@@ -36,7 +36,7 @@ export async function findPublicShipment(number: string): Promise<Shipment | nul
   const atDest = !delivered && km(current, destination) < 5
   const created = new Date(s.created_at).toISOString()
   const updated = new Date(s.updated_at).toISOString()
-  const eta = s.eta ? `${s.eta}T00:00:00.000Z` : ''
+  const eta = s.eta_at ? `${String(s.eta_at).replace(' ', 'T').slice(0, 19)}.000Z` : ''
 
   const stop = (p: Place, status: RouteStop['status'], timestamp: string): RouteStop => ({ ...p, status, timestamp })
   let route: RouteStop[]

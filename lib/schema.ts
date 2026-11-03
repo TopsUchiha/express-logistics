@@ -1,4 +1,7 @@
 // Created on first connection. Every statement is idempotent.
+/** Bump this whenever SCHEMA changes so existing databases are upgraded once. */
+export const SCHEMA_VERSION = 2
+
 export const SCHEMA = `
 create table if not exists admin_users (
   id uuid primary key default gen_random_uuid(),
@@ -24,7 +27,7 @@ create table if not exists shipments (
   origin text not null, origin_lat double precision not null, origin_lng double precision not null,
   destination text not null, dest_lat double precision not null, dest_lng double precision not null,
   current_location text not null, current_lat double precision not null, current_lng double precision not null,
-  eta date, product text, quantity text, total_freight text, comment text,
+  eta date, eta_at timestamp, product text, quantity text, total_freight text, comment text,
   packages jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -70,6 +73,11 @@ create table if not exists chat_sessions (
   expires_at timestamptz not null,
   created_at timestamptz not null default now()
 );
+-- upgrades for databases created by earlier versions (safe to run again)
+alter table shipments add column if not exists eta_at timestamp;
+update shipments set eta_at = eta::timestamp + interval '12 hours' where eta is not null and eta_at is null;
+alter table admin_sessions add column if not exists ua_hash text;
+create table if not exists schema_meta (id int primary key, version int not null);
 create table if not exists rate_limits (
   key text primary key,
   count int not null,

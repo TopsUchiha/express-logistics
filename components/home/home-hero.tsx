@@ -16,7 +16,7 @@ export function HomeHero() {
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-navy/95 via-navy/75 to-navy/30" />
 
       <Container className="flex min-h-[560px] flex-col justify-center py-24 sm:min-h-[620px] lg:min-h-[680px]">
-        <div className="flex max-w-2xl flex-col gap-6 animate-fade-up">
+        <div className="flex max-w-2xl flex-col gap-6">
           <Eyebrow tone="light">Freight forwarding</Eyebrow>
           <h1 className="text-balance text-[2.6rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
             Logistics Solutions for Your <span className="text-brand">Business</span>

@@ -33,7 +33,7 @@ export function ShipmentForm() {
           <Field name="service_detail" label="Service detail (optional)" state={state} placeholder="e.g. FCL 40ft" />
           <Field name="origin" label="Origin (City, Country)" state={state} required placeholder="Shanghai, China" />
           <Field name="destination" label="Destination (City, Country)" state={state} required placeholder="Douala, Cameroon" />
-          <Field name="eta" label="Estimated delivery" state={state} type="date" />
+          <Field name="eta_at" label="Estimated delivery (time at destination)" state={state} type="datetime-local" />
           <Field name="total_freight" label="Total freight" state={state} />
           <Field name="product" label="Product" state={state} />
           <Field name="quantity" label="Quantity" state={state} />

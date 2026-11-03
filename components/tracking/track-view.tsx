@@ -7,7 +7,7 @@ import { Container, Eyebrow } from '@/components/shared/primitives'
 import { TrackingMap } from './tracking-map'
 import { normalizeTrackingNumber, trackingService } from '@/lib/tracking/tracking-service'
 import type { Shipment, TrackingResult } from '@/lib/tracking/types'
-import { formatDate, formatDateTime } from '@/lib/format'
+import { formatDateTime, formatWallClock } from '@/lib/format'
 import { images, siteConfig } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
@@ -77,7 +77,7 @@ function Summary({ shipment }: { shipment: Shipment }) {
         <h2 className="text-2xl font-extrabold text-navy sm:text-3xl">{shipment.trackingNumber}</h2>
         <p className="text-sm text-muted-foreground">
           <span className="mr-2 inline-block h-2 w-2 rounded-full bg-brand" aria-hidden="true" />
-          <strong className="text-navy">{shipment.status}</strong>{shipment.estimatedDelivery ? ` · ETA ${formatDate(shipment.estimatedDelivery)}` : ''} · Updated {formatDateTime(shipment.lastUpdated)}
+          <strong className="text-navy">{shipment.status}</strong>{shipment.estimatedDelivery ? ` · ETA ${formatWallClock(shipment.estimatedDelivery)} (local time)` : ''} · Updated {formatDateTime(shipment.lastUpdated)}
         </p>
       </div>
     </div>
@@ -109,7 +109,7 @@ function Details({ shipment }: { shipment: Shipment }) {
             <li key={ev.title + ev.timestamp} className="flex gap-3">
               <span aria-hidden="true" className={cn('mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full border', ev.completed ? 'border-brand bg-brand' : 'border-input bg-white')} />
               <div className="flex flex-col gap-0.5">
-                <p className="text-[11px] font-bold text-brand">{formatDateTime(ev.timestamp)}</p>
+                <p className="text-[11px] font-bold text-brand">{ev.completed ? formatDateTime(ev.timestamp) : formatWallClock(ev.timestamp)}</p>
                 <p className="text-sm font-extrabold text-navy">{ev.title}</p>
                 <p className="text-[13px] leading-snug text-muted-foreground">{ev.description} · {ev.location}</p>
               </div>

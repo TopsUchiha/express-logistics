@@ -9,6 +9,8 @@ export type Service = {
   icon: ServiceIcon
   image: string
   imageAlt: string
+  /** CSS object-position for banner crops, e.g. 'center 62%'. */
+  imagePosition?: string
   summary: string
   intro: string
   overview: string[]
@@ -97,6 +99,52 @@ export const services: Service[] = [
         question: 'How long does ocean freight take?',
         answer:
           'Anywhere from about 10 to 45 days, depending on the lane, any transshipment and port congestion.',
+      },
+    ],
+  },
+  {
+    slug: 'land-freight',
+    title: 'Land Freight',
+    shortTitle: 'Land Freight',
+    icon: 'truck',
+    image: images.landFreight,
+    imageAlt: 'White freight truck pulling a shipping container along a highway',
+    imagePosition: 'center 64%',
+    summary: 'Truck haulage for containers and general cargo, from the port to your door.',
+    intro:
+      'Full-truckload and part-load haulage by road, including container pickups from ports and rail yards.',
+    overview: [
+      'We match each load to the right truck and trailer, then book the pickup, the route and the delivery window. Dry vans, flatbeds and container chassis cover most cargo.',
+      'Every load is tracked from pickup to delivery, and you can follow it on the Track & Trace page. If traffic, weather or a port queue causes a delay, we tell you early.',
+    ],
+    features: [
+      'Full-truckload and part-load options',
+      'Container pickup from ports and rail yards',
+      'Dry vans, flatbeds and container chassis',
+      'Regional and cross-border runs',
+      'Dock-to-dock or door-to-door delivery',
+      'Live tracking from pickup to delivery',
+    ],
+    benefits: [
+      { title: 'Flexible loads', description: 'Book a full truck or just the space you need.' },
+      { title: 'Port to door', description: 'We collect from the port and deliver to your site.' },
+      { title: 'Tracked trips', description: 'Follow every load from pickup to delivery.' },
+    ],
+    faqs: [
+      {
+        question: 'What size loads can you move?',
+        answer:
+          'From a few pallets to a full truckload. Tell us the weight, the size and the pickup and delivery points, and we’ll recommend the right truck.',
+      },
+      {
+        question: 'Can you collect containers from the port?',
+        answer:
+          'Yes. We pick up containers from ports and rail yards and deliver them to your warehouse or site. Send us the container number and the release details.',
+      },
+      {
+        question: 'How long does road delivery take?',
+        answer:
+          'It depends on the distance, any border crossing and the pickup date. A regional delivery is often 1–2 days, and longer routes take more. Every quote includes an estimated delivery date.',
       },
     ],
   },
@@ -291,7 +339,7 @@ export const customsDocuments = [
 export const comparisonRows = [
   { service: 'Air Freight', speed: 5, cost: 2, capacity: 2, idealFor: 'Urgent, high-value and perishable goods' },
   { service: 'Ocean Freight', speed: 2, cost: 5, capacity: 5, idealFor: 'Large volumes and non-urgent cargo' },
-  { service: 'Road Freight', speed: 4, cost: 4, capacity: 3, idealFor: 'Regional and cross-border deliveries' },
+  { service: 'Land Freight', speed: 4, cost: 4, capacity: 3, idealFor: 'Regional and cross-border deliveries' },
   { service: 'Heavy Machinery', speed: 2, cost: 2, capacity: 5, idealFor: 'Oversized and out-of-gauge equipment' },
   { service: 'Warehousing', speed: 3, cost: 4, capacity: 4, idealFor: 'Storage, fulfilment and distribution' },
 ]

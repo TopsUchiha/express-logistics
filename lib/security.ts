@@ -37,4 +37,4 @@ export async function readJson(req: Request, maxBytes = 8_000): Promise<Record<s
 }
 
 export const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '')
-export const isEmail = (v: string) => v.length <= 254 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)
+export const isEmail = (v: string) => v.length <= 254 && /^[A-Za-z0-9._%+'-]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$/.test(v)

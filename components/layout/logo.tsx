@@ -4,29 +4,28 @@ import { siteConfig } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
 /**
- * The company logo on a white plate, so it reads on both the orange header and the navy footer.
- * Without a logo image it falls back to a text mark.
+ * The company logo, drawn straight on the page (no box behind it).
+ * `onDark` swaps in the version with a white word mark for the navy footer.
  */
-export function Logo({ className }: { className?: string; tone?: 'light' | 'dark' }) {
-  const { name, logo, logoSize, logoMark } = siteConfig.company
+export function Logo({ className, onDark = false }: { className?: string; onDark?: boolean }) {
+  const { name, logo, logoDark, logoSize, logoMark } = siteConfig.company
+  const src = onDark ? (logoDark ?? logo) : logo
   return (
-    <Link
-      href="/"
-      className={cn('inline-flex w-fit items-center rounded-sm bg-white px-3 py-1.5 shadow-sm', className)}
-      aria-label={`${name} home`}
-    >
-      {logo ? (
+    <Link href="/" className={cn('inline-flex items-center', className)} aria-label={`${name} home`}>
+      {src ? (
         <Image
-          src={logo}
+          src={src}
           alt={name}
           width={logoSize.width}
           height={logoSize.height}
-          priority
-          sizes="160px"
-          className="h-10 w-auto sm:h-12"
+          priority={!onDark}
+          sizes="220px"
+          className="h-11 w-auto md:h-14"
         />
       ) : (
-        <span className="text-sm font-black uppercase tracking-wide text-navy">{logoMark} {name}</span>
+        <span className={cn('text-sm font-black uppercase tracking-wide', onDark ? 'text-white' : 'text-navy')}>
+          {logoMark} {name}
+        </span>
       )}
     </Link>
   )

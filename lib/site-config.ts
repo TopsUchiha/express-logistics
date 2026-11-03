@@ -9,6 +9,8 @@ export const siteConfig = {
     logoMark: 'EL',
     /** Wide logo (mark + name), transparent PNG. Its size must match logoSize below. */
     logo: '/images/logo.png' as string | null,
+    /** Same logo with a white word mark, for the dark navy footer. */
+    logoDark: '/images/logo-dark.png' as string | null,
     logoSize: { width: 1026, height: 277 },
     tagline: 'Freight forwarding that keeps you posted.',
     description:
@@ -53,6 +55,7 @@ export const navigation = [
       { label: 'All Services', href: '/services' },
       { label: 'Air Freight', href: '/services/air-freight' },
       { label: 'Ocean Freight', href: '/services/ocean-freight' },
+      { label: 'Land Freight', href: '/services/land-freight' },
       { label: 'Heavy Machinery Transport', href: '/services/heavy-machinery' },
       { label: 'Warehousing', href: '/services/warehousing' },
       { label: 'Customs Clearance', href: '/services/customs-clearance' },
@@ -75,6 +78,7 @@ export const images = {
   heavyMachinery: '/images/heavy-machinery.jpg',
   customs: '/images/customs.jpg',
   petTransport: '/images/puppy-crate.jpg',
+  landFreight: '/images/land-freight.jpg',
   statsBackground: '/images/stats-bg.jpg',
   ctaBackground: '/images/cta-bg.jpg',
   trackHero: '/images/track-hero.jpg',

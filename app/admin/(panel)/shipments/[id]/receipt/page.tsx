@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ADMIN_BASE } from '@/lib/admin-path'
 import { q, isId } from '@/lib/db'
+import { formatWallClock } from '@/lib/format'
 import { siteConfig } from '@/lib/site-config'
 import { Barcode, PrintButton } from '@/components/admin/receipt-tools'
 import { ui } from '@/components/admin/ui'
@@ -67,7 +68,7 @@ export default async function Receipt({ params }: { params: Promise<{ id: string
         </div>
         <Details title="SENDER DETAILS" rows={[['Name', s.sender_name], ['Phone', s.sender_phone], ['Address', s.sender_address], ['Email', s.sender_email]]} />
         <Details title="RECEIVER DETAILS" rows={[['Name', s.receiver_name], ['Phone', s.receiver_phone], ['Address', s.receiver_address], ['Email', s.receiver_email]]} />
-        <Details title="SHIPMENT DETAILS" rows={[['Product', s.product], ['Quantity', s.quantity], ['Total freight', s.total_freight], ['Estimated delivery', s.eta], ['Comment', s.comment]]} />
+        <Details title="SHIPMENT DETAILS" rows={[['Product', s.product], ['Quantity', s.quantity], ['Total freight', s.total_freight], ['Estimated delivery', s.eta_at ? formatWallClock(`${String(s.eta_at).replace(' ', 'T').slice(0, 19)}Z`) : null], ['Comment', s.comment]]} />
 
         <section className="mt-6">
           <h2 className="border-b border-navy/15 pb-1 text-sm font-bold">PACKAGE DETAILS</h2>

@@ -14,6 +14,7 @@ export function ServiceCard({ service }: { service: Service }) {
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
+          style={service.imagePosition ? { objectPosition: service.imagePosition } : undefined}
         />
       </div>
       <div className="relative flex flex-1 flex-col gap-3 px-6 pt-10 pb-6">

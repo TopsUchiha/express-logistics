@@ -28,6 +28,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         description={service.summary}
         image={service.image}
         imageAlt={service.imageAlt}
+        imagePosition={service.imagePosition}
         breadcrumbs={[{ label: 'Services', href: '/services' }, { label: service.title }]}
       />
 

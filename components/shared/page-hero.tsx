@@ -9,6 +9,7 @@ export function PageHero({
   eyebrow,
   image,
   imageAlt = '',
+  imagePosition,
   breadcrumbs = [],
   children,
 }: {
@@ -17,15 +18,16 @@ export function PageHero({
   eyebrow?: string
   image: string
   imageAlt?: string
+  imagePosition?: string
   breadcrumbs?: { label: string; href?: string }[]
   children?: React.ReactNode
 }) {
   return (
     <section className="relative isolate overflow-hidden bg-navy">
-      <Image src={image} alt={imageAlt} fill priority sizes="100vw" className="-z-20 object-cover" />
+      <Image src={image} alt={imageAlt} fill priority sizes="100vw" className="-z-20 object-cover" style={imagePosition ? { objectPosition: imagePosition } : undefined} />
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-navy via-navy/85 to-navy/40" />
       <Container className="py-20 sm:py-24 lg:py-28">
-        <div className="flex max-w-3xl flex-col gap-5 animate-fade-up">
+        <div className="flex max-w-3xl flex-col gap-5">
           {breadcrumbs.length > 0 && (
             <nav aria-label="Breadcrumb">
               <ol className="flex flex-wrap items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-white/60">

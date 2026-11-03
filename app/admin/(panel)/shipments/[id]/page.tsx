@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { addEvent, deleteShipment, updateShipment } from '../../../actions'
+import { addEvent, deleteShipment, updateEta, updateShipment } from '../../../actions'
 import { ADMIN_BASE } from '@/lib/admin-path'
 import { q, isId } from '@/lib/db'
+import { formatWallClock } from '@/lib/format'
 import { STATUSES, STATUS_LABELS, fmt } from '@/lib/status'
 import { ConfirmButton } from '@/components/admin/client-bits'
 import { ui } from '@/components/admin/ui'
@@ -10,6 +11,7 @@ import { ui } from '@/components/admin/ui'
 const ERRORS: Record<string, string> = {
   location: 'We couldn’t find that location on the map. Try "City, Country".',
   email: 'One of the email addresses looks wrong.',
+  eta: 'That date and time doesn’t look right. Pick both a date and a time.',
 }
 
 function Input({ name, label, value, type = 'text' }: { name: string; label: string; value?: string | null; type?: string }) {
@@ -42,6 +44,21 @@ export default async function ShipmentPage({ params, searchParams }: { params: P
 
       {sp.error && <p role="alert" className="rounded-sm border border-destructive/40 bg-white p-3 text-sm font-semibold text-destructive">{ERRORS[sp.error] ?? 'Something went wrong.'}</p>}
       {sp.saved && <p role="status" className="rounded-sm border border-brand/40 bg-white p-3 text-sm font-semibold text-navy">Saved.</p>}
+
+      <section className={ui.card}>
+        <h2 className={ui.h2}>Estimated delivery</h2>
+        <form action={updateEta} className="mt-4 flex flex-wrap items-end gap-3">
+          <input type="hidden" name="id" value={id} />
+          <label className={`${ui.label} min-w-[260px]`}>Date and time at the destination
+            <input name="eta_at" type="datetime-local" defaultValue={s.eta_at ? String(s.eta_at).slice(0, 16).replace(' ', 'T') : ''} className={ui.input} />
+          </label>
+          <button className={ui.primary}>Save</button>
+          <button name="clear" value="1" formNoValidate className={ui.secondary}>Clear</button>
+        </form>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Customers see exactly this time{s.eta_at ? <>: <strong className="text-navy">{formatWallClock(`${String(s.eta_at).replace(' ', 'T').slice(0, 19)}Z`)}</strong></> : '. Nothing is shown until you set one.'}
+        </p>
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className={ui.card}>
@@ -84,7 +101,6 @@ export default async function ShipmentPage({ params, searchParams }: { params: P
             <Input name="receiver_email" label="Receiver email" value={s.receiver_email} type="email" />
             <Input name="receiver_phone" label="Receiver phone" value={s.receiver_phone} />
             <Input name="receiver_address" label="Receiver address" value={s.receiver_address} />
-            <Input name="eta" label="Estimated delivery" value={s.eta} type="date" />
             <Input name="total_freight" label="Total freight" value={s.total_freight} />
             <Input name="product" label="Product" value={s.product} />
             <Input name="quantity" label="Quantity" value={s.quantity} />

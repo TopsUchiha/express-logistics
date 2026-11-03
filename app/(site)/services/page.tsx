@@ -8,7 +8,7 @@ import { images } from '@/lib/site-config'
 
 export const metadata: Metadata = {
   title: 'Services',
-  description: 'Air, ocean and heavy machinery transport, warehousing, customs clearance and pet transport.',
+  description: 'Air, ocean, land and heavy machinery transport, warehousing, customs clearance and pet transport.',
 }
 
 export default function ServicesPage() {
@@ -17,7 +17,7 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="What we do"
         title="Freight, storage and customs from one team"
-        description="Six services, one team responsible for all of them."
+        description="Seven services, one team responsible for all of them."
         image={images.warehouse}
         breadcrumbs={[{ label: 'Services' }]}
       />

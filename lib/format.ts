@@ -11,6 +11,16 @@ export function formatDateTime(value: string | undefined | null) {
   }).format(d)
 }
 
+/** A date and time typed by an admin (no time zone): shown exactly as entered, for every visitor. */
+export function formatWallClock(value?: string | Date | null) {
+  if (!value) return '—'
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return '—'
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC',
+  }).format(d)
+}
+
 export function formatDate(value: string | undefined | null) {
   if (!value) return '—'
   const d = new Date(value)

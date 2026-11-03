@@ -15,6 +15,7 @@ export const STATUSES = Object.keys(STATUS_LABELS)
 export const SERVICES = [
   { label: 'Air Freight', mode: 'air' },
   { label: 'Ocean Freight', mode: 'ocean' },
+  { label: 'Land Freight', mode: 'road' },
   { label: 'Heavy Machinery Transport', mode: 'road' },
   { label: 'Pet Transport', mode: 'air' },
 ] as const

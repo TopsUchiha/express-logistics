@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { q } from './db'
 import { newToken, sha256 } from './security'
@@ -14,7 +14,8 @@ export async function createSession(userId: string) {
   const expires = new Date(Date.now() + TTL_MS)
   await q('delete from admin_sessions where expires_at < now()')
   await q(`delete from rate_limits where window_start < now() - interval '1 day'`)
-  await q('insert into admin_sessions(user_id, token_hash, expires_at) values ($1,$2,$3)', [userId, sha256(token), expires])
+  const ua = sha256((await headers()).get('user-agent') ?? '')
+  await q('insert into admin_sessions(user_id, token_hash, expires_at, ua_hash) values ($1,$2,$3,$4)', [userId, sha256(token), expires, ua])
   ;(await cookies()).set(NAME, token, { httpOnly: true, secure: PROD, sameSite: 'lax', path: '/', expires })
 }
 
@@ -23,8 +24,8 @@ export const getAdmin = cache(async () => {
   if (!token) return null
   const [u] = await q(
     `select u.id, u.email from admin_sessions s join admin_users u on u.id = s.user_id
-     where s.token_hash = $1 and s.expires_at > now()`,
-    [sha256(token)],
+     where s.token_hash = $1 and s.expires_at > now() and (s.ua_hash is null or s.ua_hash = $2)`,
+    [sha256(token), sha256((await headers()).get('user-agent') ?? '')],
   )
   return (u as { id: string; email: string } | undefined) ?? null
 })

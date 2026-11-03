@@ -61,6 +61,14 @@ export async function logout() {
 
 export type FormState = { error?: string; values?: Record<string, string>; n?: number }
 
+/** 'YYYY-MM-DDTHH:MM' from a datetime-local input -> a timestamp string, or null when empty or invalid. */
+function parseEta(v: string) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v)) return null
+  const t = Date.parse(`${v}:00Z`)
+  const year = new Date(t).getUTCFullYear()
+  return Number.isNaN(t) || year < 2000 || year > 2100 ? null : `${v.replace('T', ' ')}:00`
+}
+
 function packagesFrom(form: FormData) {
   return [1, 2, 3]
     .map((i) => ({
@@ -80,7 +88,7 @@ export async function createShipment(_prev: FormState, form: FormData): Promise<
   const [origin, destination] = [field(form, 'origin', 150), field(form, 'destination', 150)]
   const senderEmail = field(form, 'sender_email', 254).toLowerCase()
   const receiverEmail = field(form, 'receiver_email', 254).toLowerCase()
-  const eta = /^\d{4}-\d{2}-\d{2}$/.test(field(form, 'eta', 10)) ? field(form, 'eta', 10) : null
+  const eta = parseEta(field(form, 'eta_at', 16))
 
   const fail = (error: string): FormState => ({ error, values, n: Date.now() })
   if (!service) return fail('Choose a service.')
@@ -96,7 +104,7 @@ export async function createShipment(_prev: FormState, form: FormData): Promise<
   const [s] = await q(
     `insert into shipments(tracking_number, mode, service, sender_name, sender_phone, sender_email, sender_address,
        receiver_name, receiver_phone, receiver_email, receiver_address, origin, origin_lat, origin_lng, destination, dest_lat, dest_lng,
-       current_location, current_lat, current_lng, eta, product, quantity, total_freight, comment, packages)
+       current_location, current_lat, current_lng, eta_at, product, quantity, total_freight, comment, packages)
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$12,$13,$14,$18,$19,$20,$21,$22,$23) returning id`,
     [
       tracking, service.mode, detail ? `${service.label} · ${detail}` : service.label,
@@ -118,17 +126,28 @@ export async function updateShipment(form: FormData) {
   const senderEmail = field(form, 'sender_email', 254).toLowerCase()
   const receiverEmail = field(form, 'receiver_email', 254).toLowerCase()
   if ((senderEmail && !isEmail(senderEmail)) || (receiverEmail && !isEmail(receiverEmail))) go(`/shipments/${id}?error=email`)
-  const eta = /^\d{4}-\d{2}-\d{2}$/.test(field(form, 'eta', 10)) ? field(form, 'eta', 10) : null
   await q(
     `update shipments set sender_name=$2, sender_phone=$3, sender_email=$4, sender_address=$5,
        receiver_name=$6, receiver_phone=$7, receiver_email=$8, receiver_address=$9,
-       eta=$10, product=$11, quantity=$12, total_freight=$13, comment=$14, updated_at=now() where id=$1`,
+       product=$10, quantity=$11, total_freight=$12, comment=$13, updated_at=now() where id=$1`,
     [
       id, field(form, 'sender_name', 100), field(form, 'sender_phone', 40) || null, senderEmail || null, field(form, 'sender_address', 250) || null,
       field(form, 'receiver_name', 100), field(form, 'receiver_phone', 40) || null, receiverEmail || null, field(form, 'receiver_address', 250) || null,
-      eta, field(form, 'product', 150) || null, field(form, 'quantity', 40) || null, field(form, 'total_freight', 40) || null, field(form, 'comment', 500) || null,
+      field(form, 'product', 150) || null, field(form, 'quantity', 40) || null, field(form, 'total_freight', 40) || null, field(form, 'comment', 500) || null,
     ],
   )
+  go(`/shipments/${id}?saved=1`)
+}
+
+/** Set, change or clear the estimated delivery date and time. */
+export async function updateEta(form: FormData) {
+  await requireAdmin()
+  const id = field(form, 'id', 40)
+  if (!isId(id)) go('/shipments')
+  const clear = field(form, 'clear', 2) === '1'
+  const eta = clear ? null : parseEta(field(form, 'eta_at', 16))
+  if (!clear && !eta) go(`/shipments/${id}?error=eta`)
+  await q('update shipments set eta_at = $2, updated_at = now() where id = $1', [id, eta])
   go(`/shipments/${id}?saved=1`)
 }
 

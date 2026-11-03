@@ -22,7 +22,7 @@ export function SiteFooter() {
       <div className="h-1 bg-brand" />
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
         <div className="flex flex-col gap-5">
-          <Logo tone="light" />
+          <Logo onDark />
           <p className="text-sm leading-relaxed">{company.description}</p>
           <ul className="flex gap-2" aria-label="Social media">
             {company.social.map((s) => (
