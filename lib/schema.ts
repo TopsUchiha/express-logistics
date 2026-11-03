@@ -1,6 +1,6 @@
 // Created on first connection. Every statement is idempotent.
 /** Bump this whenever SCHEMA changes so existing databases are upgraded once. */
-export const SCHEMA_VERSION = 2
+export const SCHEMA_VERSION = 3
 
 export const SCHEMA = `
 create table if not exists admin_users (
@@ -77,6 +77,7 @@ create table if not exists chat_sessions (
 alter table shipments add column if not exists eta_at timestamp;
 update shipments set eta_at = eta::timestamp + interval '12 hours' where eta is not null and eta_at is null;
 alter table admin_sessions add column if not exists ua_hash text;
+alter table shipments add column if not exists payment_method text;
 create table if not exists schema_meta (id int primary key, version int not null);
 create table if not exists rate_limits (
   key text primary key,

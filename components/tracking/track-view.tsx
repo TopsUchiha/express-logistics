@@ -1,12 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { ArrowRight, Loader2, Plane, Search, Ship, Truck } from 'lucide-react'
 import { PageHero } from '@/components/shared/page-hero'
 import { Container, Eyebrow } from '@/components/shared/primitives'
 import { TrackingMap } from './tracking-map'
 import { normalizeTrackingNumber, trackingService } from '@/lib/tracking/tracking-service'
-import type { Shipment, TrackingResult } from '@/lib/tracking/types'
+import type { PartyInfo, Shipment, TrackingResult } from '@/lib/tracking/types'
 import { formatDateTime, formatWallClock } from '@/lib/format'
 import { images, siteConfig } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
@@ -121,6 +121,57 @@ function Details({ shipment }: { shipment: Shipment }) {
   )
 }
 
+function Row({ label, value }: { label: string; value?: string }) {
+  if (!value) return null
+  return (
+    <div>
+      <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label}</dt>
+      <dd className="text-sm font-semibold text-navy break-words">{value}</dd>
+    </div>
+  )
+}
+
+function InfoCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="rounded-sm bg-white p-6 shadow-[0_4px_24px_rgba(11,26,43,0.08)]">
+      <h3 className="mb-4 text-sm font-extrabold uppercase tracking-wider text-navy">{title}</h3>
+      <dl className="flex flex-col gap-3">{children}</dl>
+    </div>
+  )
+}
+
+function PartyRows({ p }: { p: PartyInfo }) {
+  return (
+    <>
+      <Row label="Name" value={p.name} />
+      <Row label="Phone" value={p.phone} />
+      <Row label="Email" value={p.email} />
+      <Row label="Address" value={p.address} />
+    </>
+  )
+}
+
+function ShipmentInfo({ shipment }: { shipment: Shipment }) {
+  const { packageInfo: pkg } = shipment
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <InfoCard title="Customer info"><PartyRows p={shipment.customer} /></InfoCard>
+      <InfoCard title="Sender’s info"><PartyRows p={shipment.sender} /></InfoCard>
+      <InfoCard title="Package info">
+        <Row label="Service" value={shipment.service} />
+        <Row label="Product" value={pkg.product} />
+        <Row label="Quantity" value={pkg.quantity} />
+        {pkg.pieces.map((p, i) => (
+          <Row key={i} label={`Piece ${i + 1}`} value={[p.qty && `${p.qty} ×`, p.type, p.description && `· ${p.description}`].filter(Boolean).join(' ')} />
+        ))}
+      </InfoCard>
+      <InfoCard title="Payment method">
+        <Row label="Method" value={shipment.paymentMethod || 'Not specified'} />
+      </InfoCard>
+    </div>
+  )
+}
+
 export function TrackView() {
   const [value, setValue] = useState('')
   const [result, setResult] = useState<TrackingResult | null>(null)
@@ -196,6 +247,7 @@ export function TrackView() {
                 </div>
                 <Details shipment={result.shipment} />
               </div>
+              <ShipmentInfo shipment={result.shipment} />
             </>
           )}
         </Container>

@@ -28,11 +28,30 @@ export type ShipmentEvent = {
 
 export type TransportMode = 'air' | 'ocean' | 'road'
 
+export type PartyInfo = {
+  name: string
+  phone: string
+  /** Masked on purpose (e.g. j***@gmail.com): the email on file also verifies the chat. */
+  email: string
+  address: string
+}
+
+export type PackageInfo = {
+  product: string
+  quantity: string
+  /** Pieces without dimensions or weights. */
+  pieces: { qty: string; type: string; description: string }[]
+}
+
 export type Shipment = {
   trackingNumber: string
   status: ShipmentStatus
   mode: TransportMode
   service: string
+  customer: PartyInfo
+  sender: PartyInfo
+  packageInfo: PackageInfo
+  paymentMethod: string
   origin: Place
   destination: Place
   currentLocation: Place

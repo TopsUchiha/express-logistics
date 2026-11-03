@@ -4,13 +4,14 @@ import { addEvent, deleteShipment, updateEta, updateShipment } from '../../../ac
 import { ADMIN_BASE } from '@/lib/admin-path'
 import { q, isId } from '@/lib/db'
 import { formatWallClock } from '@/lib/format'
-import { STATUSES, STATUS_LABELS, fmt } from '@/lib/status'
+import { SERVICES, STATUSES, STATUS_LABELS, fmt } from '@/lib/status'
 import { ConfirmButton } from '@/components/admin/client-bits'
 import { ui } from '@/components/admin/ui'
 
 const ERRORS: Record<string, string> = {
   location: 'We couldn’t find that location on the map. Try "City, Country".',
   email: 'One of the email addresses looks wrong.',
+  service: 'Choose a valid service.',
   eta: 'That date and time doesn’t look right. Pick both a date and a time.',
 }
 
@@ -25,6 +26,10 @@ export default async function ShipmentPage({ params, searchParams }: { params: P
   const [s] = await q('select * from shipments where id = $1', [id])
   if (!s) notFound()
   const events = await q('select status, location, description, created_at from shipment_events where shipment_id = $1 order by created_at desc', [id])
+  const svc = SERVICES.find((x) => String(s.service).startsWith(x.label))
+  const svcDetail = svc ? String(s.service).slice(svc.label.length).replace(/^\s*·\s*/, '') : ''
+  const pieces: Record<string, string>[] = s.packages ?? []
+  const rows = Math.min(10, Math.max(3, pieces.length))
   const [conv] = await q('select id, admin_unread from conversations where shipment_id = $1', [id])
 
   return (
@@ -92,6 +97,21 @@ export default async function ShipmentPage({ params, searchParams }: { params: P
         <h2 className={ui.h2}>Details</h2>
         <form action={updateShipment} className="mt-4 flex flex-col gap-4">
           <input type="hidden" name="id" value={id} />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-navy">Service</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className={ui.label}>Mode of service
+              <select name="service" defaultValue={svc?.label ?? ''} className={ui.input} required>
+                {!svc && <option value="" disabled>Choose a service</option>}
+                {SERVICES.map((x) => <option key={x.label} value={x.label}>{x.label}</option>)}
+              </select>
+            </label>
+            <Input name="service_detail" label="Service detail (optional)" value={svcDetail} />
+            <label className={ui.label}>Payment method
+              <input name="payment_method" list="payment-methods" defaultValue={s.payment_method ?? ''} className={ui.input} placeholder="e.g. Bank transfer" />
+              <datalist id="payment-methods"><option value="Cash" /><option value="Bank transfer" /><option value="Credit card" /><option value="Mobile money" /><option value="Cash on delivery" /></datalist>
+            </label>
+          </div>
+          <h3 className="mt-2 text-sm font-extrabold uppercase tracking-wider text-navy">Sender and receiver (the receiver is shown to clients as “Customer”)</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input name="sender_name" label="Sender name" value={s.sender_name} />
             <Input name="sender_email" label="Sender email" value={s.sender_email} type="email" />
@@ -105,6 +125,15 @@ export default async function ShipmentPage({ params, searchParams }: { params: P
             <Input name="product" label="Product" value={s.product} />
             <Input name="quantity" label="Quantity" value={s.quantity} />
           </div>
+          <h3 className="mt-2 text-sm font-extrabold uppercase tracking-wider text-navy">Packages</h3>
+          <input type="hidden" name="pk_count" value={rows} />
+          {Array.from({ length: rows }, (_, n) => n + 1).map((i) => (
+            <div key={i} className="grid gap-3 sm:grid-cols-7">
+              {(['qty', 'type', 'description', 'length', 'width', 'height', 'weight'] as const).map((f) => (
+                <Input key={f} name={`pk${i}_${f}`} label={f === 'qty' ? 'Qty' : f === 'type' ? 'Piece type' : f === 'description' ? 'Description' : f === 'weight' ? 'Weight kg' : `${f} cm`} value={pieces[i - 1]?.[f]} />
+              ))}
+            </div>
+          ))}
           <label className={ui.label}>Comment<textarea name="comment" rows={3} defaultValue={s.comment ?? ''} className={ui.textarea} /></label>
           <div><button className={ui.primary}>Save details</button></div>
         </form>

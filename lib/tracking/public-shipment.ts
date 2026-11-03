@@ -1,6 +1,6 @@
 import { q } from '../db'
 import { STATUS_LABELS } from '../status'
-import type { Place, RouteStop, Shipment } from './types'
+import type { PartyInfo, Place, RouteStop, Shipment } from './types'
 
 const place = (text: string, lat: number, lng: number): Place => {
   const i = text.lastIndexOf(',')
@@ -19,7 +19,22 @@ function km(a: Place, b: Place) {
   return 12742 * Math.asin(Math.sqrt(h))
 }
 
-/** Public view of a shipment: never includes client names, emails or addresses. */
+const maskEmail = (e?: string | null) => {
+  const [user, domain] = (e ?? '').split('@')
+  return user && domain ? `${user[0]}***@${domain}` : ''
+}
+
+const party = (s: Record<string, string | null>, who: 'sender' | 'receiver'): PartyInfo => ({
+  name: s[`${who}_name`] ?? '',
+  phone: s[`${who}_phone`] ?? '',
+  email: maskEmail(s[`${who}_email`]),
+  address: s[`${who}_address`] ?? '',
+})
+
+/**
+ * Public view of a shipment. Shows customer (receiver), sender, package and payment details,
+ * but never full emails (they verify the chat), dimensions, weights, freight cost or internal comments.
+ */
 export async function findPublicShipment(number: string): Promise<Shipment | null> {
   const [s] = await q('select * from shipments where tracking_number = $1', [number])
   if (!s) return null
@@ -64,6 +79,14 @@ export async function findPublicShipment(number: string): Promise<Shipment | nul
     status: STATUS_LABELS[s.status] ?? s.status,
     mode: s.mode,
     service: s.service,
+    customer: party(s, 'receiver'),
+    sender: party(s, 'sender'),
+    packageInfo: {
+      product: s.product ?? '',
+      quantity: s.quantity ?? '',
+      pieces: ((s.packages ?? []) as Record<string, string>[]).map((p) => ({ qty: p.qty ?? '', type: p.type ?? '', description: p.description ?? '' })),
+    },
+    paymentMethod: s.payment_method ?? '',
     origin,
     destination,
     currentLocation: current,

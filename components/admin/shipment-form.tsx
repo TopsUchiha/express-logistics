@@ -35,6 +35,10 @@ export function ShipmentForm() {
           <Field name="destination" label="Destination (City, Country)" state={state} required placeholder="Douala, Cameroon" />
           <Field name="eta_at" label="Estimated delivery (time at destination)" state={state} type="datetime-local" />
           <Field name="total_freight" label="Total freight" state={state} />
+          <label className={ui.label}>Payment method
+            <input name="payment_method" list="payment-methods" defaultValue={state.values?.payment_method ?? ''} className={ui.input} placeholder="e.g. Bank transfer" />
+            <datalist id="payment-methods"><option value="Cash" /><option value="Bank transfer" /><option value="Credit card" /><option value="Mobile money" /><option value="Cash on delivery" /></datalist>
+          </label>
           <Field name="product" label="Product" state={state} />
           <Field name="quantity" label="Quantity" state={state} />
         </div>

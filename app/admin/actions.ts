@@ -70,7 +70,8 @@ function parseEta(v: string) {
 }
 
 function packagesFrom(form: FormData) {
-  return [1, 2, 3]
+  const count = Math.min(10, Math.max(3, Number(field(form, 'pk_count', 3)) || 3))
+  return Array.from({ length: count }, (_, i) => i + 1)
     .map((i) => ({
       qty: field(form, `pk${i}_qty`, 10), type: field(form, `pk${i}_type`, 40), description: field(form, `pk${i}_description`, 120),
       length: field(form, `pk${i}_length`, 10), width: field(form, `pk${i}_width`, 10), height: field(form, `pk${i}_height`, 10), weight: field(form, `pk${i}_weight`, 10),
@@ -104,15 +105,15 @@ export async function createShipment(_prev: FormState, form: FormData): Promise<
   const [s] = await q(
     `insert into shipments(tracking_number, mode, service, sender_name, sender_phone, sender_email, sender_address,
        receiver_name, receiver_phone, receiver_email, receiver_address, origin, origin_lat, origin_lng, destination, dest_lat, dest_lng,
-       current_location, current_lat, current_lng, eta_at, product, quantity, total_freight, comment, packages)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$12,$13,$14,$18,$19,$20,$21,$22,$23) returning id`,
+       current_location, current_lat, current_lng, eta_at, product, quantity, total_freight, comment, packages, payment_method)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$12,$13,$14,$18,$19,$20,$21,$22,$23,$24) returning id`,
     [
       tracking, service.mode, detail ? `${service.label} · ${detail}` : service.label,
       field(form, 'sender_name', 100), field(form, 'sender_phone', 40) || null, senderEmail || null, field(form, 'sender_address', 250) || null,
       field(form, 'receiver_name', 100), field(form, 'receiver_phone', 40) || null, receiverEmail || null, field(form, 'receiver_address', 250) || null,
       origin, o.lat, o.lng, destination, d.lat, d.lng,
       eta, field(form, 'product', 150) || null, field(form, 'quantity', 40) || null, field(form, 'total_freight', 40) || null, field(form, 'comment', 500) || null,
-      JSON.stringify(packagesFrom(form)),
+      JSON.stringify(packagesFrom(form)), field(form, 'payment_method', 60) || null,
     ],
   )
   await q(`insert into shipment_events(shipment_id, status, location, description) values ($1,'PENDING',$2,'Shipment created')`, [s.id, origin])
@@ -126,14 +127,20 @@ export async function updateShipment(form: FormData) {
   const senderEmail = field(form, 'sender_email', 254).toLowerCase()
   const receiverEmail = field(form, 'receiver_email', 254).toLowerCase()
   if ((senderEmail && !isEmail(senderEmail)) || (receiverEmail && !isEmail(receiverEmail))) go(`/shipments/${id}?error=email`)
+  const service = SERVICES.find((x) => x.label === field(form, 'service'))
+  if (!service) go(`/shipments/${id}?error=service`)
+  const detail = field(form, 'service_detail', 60)
   await q(
     `update shipments set sender_name=$2, sender_phone=$3, sender_email=$4, sender_address=$5,
        receiver_name=$6, receiver_phone=$7, receiver_email=$8, receiver_address=$9,
-       product=$10, quantity=$11, total_freight=$12, comment=$13, updated_at=now() where id=$1`,
+       product=$10, quantity=$11, total_freight=$12, comment=$13,
+       mode=$14, service=$15, payment_method=$16, packages=$17::jsonb, updated_at=now() where id=$1`,
     [
       id, field(form, 'sender_name', 100), field(form, 'sender_phone', 40) || null, senderEmail || null, field(form, 'sender_address', 250) || null,
       field(form, 'receiver_name', 100), field(form, 'receiver_phone', 40) || null, receiverEmail || null, field(form, 'receiver_address', 250) || null,
       field(form, 'product', 150) || null, field(form, 'quantity', 40) || null, field(form, 'total_freight', 40) || null, field(form, 'comment', 500) || null,
+      service!.mode, detail ? `${service!.label} · ${detail}` : service!.label,
+      field(form, 'payment_method', 60) || null, JSON.stringify(packagesFrom(form)),
     ],
   )
   go(`/shipments/${id}?saved=1`)
