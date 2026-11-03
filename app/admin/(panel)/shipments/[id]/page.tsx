@@ -107,8 +107,7 @@ export default async function ShipmentPage({ params, searchParams }: { params: P
             </label>
             <Input name="service_detail" label="Service detail (optional)" value={svcDetail} />
             <label className={ui.label}>Payment method
-              <input name="payment_method" list="payment-methods" defaultValue={s.payment_method ?? ''} className={ui.input} placeholder="e.g. Bank transfer" />
-              <datalist id="payment-methods"><option value="Cash" /><option value="Bank transfer" /><option value="Credit card" /><option value="Mobile money" /><option value="Cash on delivery" /></datalist>
+              <input name="payment_method" defaultValue={s.payment_method ?? ''} className={ui.input} />
             </label>
           </div>
           <h3 className="mt-2 text-sm font-extrabold uppercase tracking-wider text-navy">Sender and receiver (the receiver is shown to clients as “Customer”)</h3>
