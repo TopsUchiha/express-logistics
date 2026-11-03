@@ -30,7 +30,7 @@ export async function PanelShell({ admin, children }: { admin: { email: string }
         <div className="h-1 bg-brand" />
         <div className="flex items-center justify-between gap-3 px-4 py-4 lg:px-5 lg:py-6">
           <div className="flex flex-col gap-2">
-            <Logo tone="light" />
+            <Logo onDark />
             <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">Admin panel</span>
           </div>
           <form action={logout} className="lg:hidden">
