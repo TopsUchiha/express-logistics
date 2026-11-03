@@ -14,8 +14,9 @@ export function HomeHero() {
         className="-z-20 object-cover"
       />
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-navy/95 via-navy/75 to-navy/30" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-navy/70 to-transparent" />
 
-      <Container className="flex min-h-[560px] flex-col justify-center py-24 sm:min-h-[620px] lg:min-h-[680px]">
+      <Container className="flex min-h-[600px] flex-col justify-center pb-24 pt-40 sm:min-h-[680px] sm:pt-44 lg:min-h-[760px]">
         <div className="flex max-w-2xl flex-col gap-6">
           <Eyebrow tone="light">Freight forwarding</Eyebrow>
           <h1 className="text-balance text-[2.6rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">

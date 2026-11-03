@@ -26,7 +26,9 @@ export function PageHero({
     <section className="relative isolate overflow-hidden bg-navy">
       <Image src={image} alt={imageAlt} fill priority sizes="100vw" className="-z-20 object-cover" style={imagePosition ? { objectPosition: imagePosition } : undefined} />
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-navy via-navy/85 to-navy/40" />
-      <Container className="py-20 sm:py-24 lg:py-28">
+      {/* keeps the transparent nav readable over bright photos */}
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-navy/70 to-transparent" />
+      <Container className="pb-20 pt-40 sm:pb-24 sm:pt-44 lg:pb-28 lg:pt-48">
         <div className="flex max-w-3xl flex-col gap-5">
           {breadcrumbs.length > 0 && (
             <nav aria-label="Breadcrumb">

@@ -40,16 +40,19 @@ export function SiteHeader() {
     }
   }, [mobileOpen])
 
+  // Transparent over the hero image; turns solid white once the page scrolls or the mobile menu is open.
+  const solid = scrolled || mobileOpen
+
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 bg-white transition-shadow',
-        scrolled ? 'shadow-[0_2px_20px_rgba(11,26,43,0.12)]' : 'border-b border-border',
+        'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300',
+        solid ? 'border-b border-border bg-white shadow-[0_2px_20px_rgba(11,26,43,0.12)]' : 'border-b border-white/15 bg-transparent',
       )}
     >
       <div className="flex h-18 items-stretch md:h-20">
         <div className="flex items-center pr-6 pl-[max(1rem,calc((100vw-80rem)/2+1rem))] md:pr-10">
-          <Logo />
+          <Logo onDark={!solid} />
         </div>
 
         <div className="mx-auto flex flex-1 items-center justify-end gap-6 pr-[max(1rem,calc((100vw-80rem)/2+1rem))] pl-4">
@@ -58,7 +61,7 @@ export function SiteHeader() {
               {navigation.map((item) =>
                 'children' in item ? (
                   <li key={item.href}>
-                    <ServicesDropdown item={item} pathname={pathname} />
+                    <ServicesDropdown item={item} pathname={pathname} solid={solid} />
                   </li>
                 ) : (
                   <li key={item.href}>
@@ -67,7 +70,7 @@ export function SiteHeader() {
                       aria-current={isActive(pathname, item.href) ? 'page' : undefined}
                       className={cn(
                         'relative inline-flex h-10 items-center px-3 text-[13px] font-bold uppercase tracking-wider transition-colors hover:text-brand',
-                        isActive(pathname, item.href) ? 'text-brand' : 'text-navy',
+                        isActive(pathname, item.href) ? 'text-brand' : solid ? 'text-navy' : 'text-white',
                       )}
                     >
                       {item.label}
@@ -80,14 +83,20 @@ export function SiteHeader() {
 
           <Link
             href="/contact"
-            className="hidden h-11 items-center rounded-sm bg-navy px-5 text-[13px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-brand md:inline-flex"
+            className={cn(
+              'hidden h-11 items-center rounded-sm px-5 text-[13px] font-bold uppercase tracking-wider text-white transition-colors md:inline-flex',
+              solid ? 'bg-navy hover:bg-brand' : 'bg-brand hover:bg-brand-hover',
+            )}
           >
             Get a Quote
           </Link>
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-sm border border-border text-navy lg:hidden"
+            className={cn(
+              'inline-flex h-11 w-11 items-center justify-center rounded-sm border lg:hidden',
+              solid ? 'border-border text-navy' : 'border-white/40 text-white',
+            )}
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -105,7 +114,7 @@ export function SiteHeader() {
 
 type NavWithChildren = Extract<(typeof navigation)[number], { children: unknown }>
 
-function ServicesDropdown({ item, pathname }: { item: NavWithChildren; pathname: string }) {
+function ServicesDropdown({ item, pathname, solid }: { item: NavWithChildren; pathname: string; solid: boolean }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const menuId = useId()
@@ -150,7 +159,7 @@ function ServicesDropdown({ item, pathname }: { item: NavWithChildren; pathname:
         onClick={() => setOpen((v) => !v)}
         className={cn(
           'inline-flex h-10 items-center gap-1 px-3 text-[13px] font-bold uppercase tracking-wider transition-colors hover:text-brand',
-          active ? 'text-brand' : 'text-navy',
+          active ? 'text-brand' : solid ? 'text-navy' : 'text-white',
         )}
       >
         {item.label}
