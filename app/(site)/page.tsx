@@ -7,6 +7,7 @@ import {
   ProcessSection,
   StatisticsSection,
 } from '@/components/home/home-sections'
+import { Testimonials } from '@/components/home/testimonials'
 import { CtaBanner } from '@/components/shared/cta-banner'
 
 export default function HomePage() {
@@ -18,6 +19,7 @@ export default function HomePage() {
       <ProcessSection />
       <StatisticsSection />
       <OpportunitySection />
+      <Testimonials />
       <CtaBanner />
       <FaqPreview />
     </>
