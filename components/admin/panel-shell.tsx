@@ -8,13 +8,15 @@ import { q } from '@/lib/db'
 export async function PanelShell({ admin, children }: { admin: { email: string }; children: React.ReactNode }) {
   const [c] = await q(
     `select (select count(*)::int from conversations where admin_unread > 0) as chats,
-            (select count(*)::int from contact_messages where status = 'NEW') as enquiries`,
+            (select count(*)::int from contact_messages where status = 'NEW') as enquiries,
+            (select count(*)::int from reviews where status = 'PENDING') as reviews`,
   )
   const items: AdminNavItem[] = [
     { href: ADMIN_BASE, label: 'Dashboard', icon: 'dashboard', exact: true },
     { href: `${ADMIN_BASE}/shipments`, label: 'Shipments', icon: 'shipments' },
     { href: `${ADMIN_BASE}/inbox`, label: 'Chats', icon: 'chats', badge: c.chats },
     { href: `${ADMIN_BASE}/enquiries`, label: 'Enquiries', icon: 'enquiries', badge: c.enquiries },
+    { href: `${ADMIN_BASE}/reviews`, label: 'Reviews', icon: 'reviews', badge: c.reviews },
   ]
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',

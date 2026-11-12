@@ -1,6 +1,6 @@
 // Created on first connection. Every statement is idempotent.
 /** Bump this whenever SCHEMA changes so existing databases are upgraded once. */
-export const SCHEMA_VERSION = 3
+export const SCHEMA_VERSION = 4
 
 export const SCHEMA = `
 create table if not exists admin_users (
@@ -73,6 +73,15 @@ create table if not exists chat_sessions (
   expires_at timestamptz not null,
   created_at timestamptz not null default now()
 );
+create table if not exists reviews (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  rating int not null check (rating between 1 and 5),
+  body text not null,
+  status text not null default 'PENDING' check (status in ('PENDING','APPROVED','REJECTED')),
+  created_at timestamptz not null default now()
+);
+create index if not exists reviews_status_idx on reviews(status, created_at desc);
 -- upgrades for databases created by earlier versions (safe to run again)
 alter table shipments add column if not exists eta_at timestamp;
 update shipments set eta_at = eta::timestamp + interval '12 hours' where eta is not null and eta_at is null;

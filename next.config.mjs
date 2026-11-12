@@ -1,7 +1,7 @@
 import { buildCsp } from './lib/csp.mjs'
 
 /** Pages that are built ahead of time and served from the CDN. They get the static policy below. */
-const PUBLIC_PAGES = ['/', '/about', '/contact', '/faq', '/services', '/services/:slug', '/service-comparison', '/track', '/privacy-policy', '/terms-and-conditions']
+const PUBLIC_PAGES = ['/', '/about', '/contact', '/faq', '/services', '/services/:slug', '/service-comparison', '/track', '/review', '/privacy-policy', '/terms-and-conditions']
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

@@ -24,6 +24,7 @@ The first visit asks for the setup key, an email and a password of 12+ character
 2. **Add an update** on the shipment page whenever it moves. The public tracking page and map follow it.
 3. **Chats.** A customer opens the chat, enters the tracking number, then the email on file. Their messages appear under **Chats**. Reply there.
 4. **Enquiries** holds messages from the contact form.
+5. **Reviews.** Reviews sent from `/review` wait under **Reviews**. Approve or reject each one; only approved reviews show on the homepage. The 12 sample testimonials in `lib/testimonials-data.ts` are labelled "Sample" and hide themselves once 3 real reviews are approved (set the array to `[]` to remove them now).
 
 ## Notes
 - Built for Vercel. It trusts `x-real-ip` / `x-forwarded-for` for rate limiting, which Vercel sets itself. Behind another proxy, check `clientIp` in `lib/security.ts`.

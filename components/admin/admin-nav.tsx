@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Inbox, LayoutDashboard, MessagesSquare, Package } from 'lucide-react'
+import { Inbox, LayoutDashboard, MessagesSquare, Package, Star } from 'lucide-react'
 
 const icons = {
   dashboard: LayoutDashboard,
   shipments: Package,
   chats: MessagesSquare,
   enquiries: Inbox,
+  reviews: Star,
 }
 
 export type AdminNavItem = {

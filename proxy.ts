@@ -49,5 +49,5 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Public pages, images and the API skip the proxy: they are served straight from the CDN with no function call.
-  matcher: ['/((?!api/|_next/static|_next/image|favicon.ico|icon|apple-icon|images/|about$|contact$|faq$|services|service-comparison$|track$|privacy-policy$|terms-and-conditions$).+)'],
+  matcher: ['/((?!api/|_next/static|_next/image|favicon.ico|icon|apple-icon|images/|about$|contact$|faq$|services|service-comparison$|track$|review$|privacy-policy$|terms-and-conditions$).+)'],
 }

@@ -241,3 +241,20 @@ export async function deleteEnquiry(form: FormData) {
   if (isId(id)) await q('delete from contact_messages where id = $1', [id])
   go('/enquiries')
 }
+
+/* ---------- reviews ---------- */
+
+export async function setReviewStatus(form: FormData) {
+  await requireAdmin()
+  const id = field(form, 'id', 40)
+  const status = field(form, 'status', 10)
+  if (isId(id) && ['APPROVED', 'REJECTED', 'PENDING'].includes(status)) await q('update reviews set status = $2 where id = $1', [id, status])
+  go('/reviews')
+}
+
+export async function deleteReview(form: FormData) {
+  await requireAdmin()
+  const id = field(form, 'id', 40)
+  if (isId(id)) await q('delete from reviews where id = $1', [id])
+  go('/reviews')
+}
